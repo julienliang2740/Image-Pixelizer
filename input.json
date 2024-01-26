@@ -1,0 +1,7 @@
+{
+    "filename" : "dian.png",
+    "imagetype" : "png",
+    "desired_n" : 33,
+    "enlargement_factor" : 10,
+    "threshold_value" : 140
+}
