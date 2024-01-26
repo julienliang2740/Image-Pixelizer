@@ -7,7 +7,7 @@ Image specification and parameters are adjusted in input.json:
 ```
 {
     "imagetype" : "png",
-    "desired_n" : 128,
+    "desired_n" : 25,
     "enlargement_factor" : 10,
     "threshold_value" : 150
 }
