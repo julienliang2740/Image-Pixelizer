@@ -1,6 +1,7 @@
 from PIL import Image
 import cv2
 import json
+import os
 
 def background_fix(image):
     new_image = Image.new("RGBA", image.size, "WHITE")
@@ -29,15 +30,10 @@ if __name__ == '__main__':
     data = json.load(f)
 
     imagetype = data['imagetype']
-    input_name = data['filename']
-    output_name = input_name.split('.')[0] + "_output" + "." + imagetype
-    thresholded_output_name = input_name.split('.')[0] + "_thresold" + "." + imagetype
     desired_n = data['desired_n']
     enlargement_factor = data['enlargement_factor']
     threshold_value = data['threshold_value']
 
-    print(f"Input name: {input_name}")
-    print(f"Output name: {output_name}")
     print(f"Image type: {imagetype}")
     print(f"Pixel dimensions: {desired_n}")
     print(f"Enlargement factor (deprecated parameter): {enlargement_factor}")
@@ -49,11 +45,21 @@ if __name__ == '__main__':
     #--------------------------------------------------------------------------------------------------------------------------------
     #--------------------------------------------------------------------------------------------------------------------------------
 
-    image = Image.open(input_name).convert("RGBA")
-    image_fixed_background = background_fix(image)
-    image_pixelated = pixelate(image_fixed_background, desired_n)
-    image_pixelated.save(output_name)
+    images = [os.path.join("source", f) for f in os.listdir("source") if os.path.isfile(os.path.join("source", f))]
+    for image_path in images:
+        image_name = os.path.basename(image_path)
 
-    # Thresholding uses opencv
-    image_thresholded = threshold(output_name, threshold_value)
-    cv2.imwrite(thresholded_output_name, image_thresholded)
+        output_name = image_name.split('.')[0] + "_output" + "." + imagetype
+        thresholded_output_name = image_name.split('.')[0] + "_thresold" + "." + imagetype
+
+        image = Image.open(image_path).convert("RGBA")
+        image_fixed_background = background_fix(image)
+        image_pixelated = pixelate(image_fixed_background, desired_n)
+        pixelated_output_path = os.path.join("pixelated", output_name)
+        image_pixelated.save(pixelated_output_path)
+
+        # Thresholding uses opencv
+        image_thresholded = threshold(pixelated_output_path, threshold_value)
+        thresholded_output_path = os.path.join("thresholded", thresholded_output_name)
+        cv2.imwrite(thresholded_output_path, image_thresholded)
+ 
